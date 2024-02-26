@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  anchor-builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/workdir
+      - ~/.config/solana/id.json:/root/.config/solana/id.json
+
+  solana-validator:
+    image: solanalabs/solana:stable
+    command: ["solana-test-validator"]
+    ports:
+      - "8899:8899"
+      - "8900:8900"
+
+volumes:
+  anchor-cache:

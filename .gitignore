@@ -1,0 +1,8 @@
+
+ideas-marketplace/.anchor
+ideas-marketplace/.DS_Store
+ideas-marketplace/target
+ideas-marketplace/**/*.rs.bk
+ideas-marketplace/node_modules
+ideas-marketplace/test-ledger
+ideas-marketplace/.yarn
