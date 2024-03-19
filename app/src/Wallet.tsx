@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import {
   ConnectionProvider,
   WalletProvider,
@@ -6,7 +6,6 @@ import {
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 import {
-  WalletDisconnectButton,
   WalletModalProvider,
   WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
@@ -28,7 +27,6 @@ function Wallet() {
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
           <WalletMultiButton />
-          <WalletDisconnectButton />
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
