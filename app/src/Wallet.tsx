@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   ConnectionProvider,
   WalletProvider,
@@ -11,7 +11,7 @@ import {
 } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
 
-function Wallet() {
+function Wallet({ children }: { children: React.ReactNode }) {
   const network = WalletAdapterNetwork.Devnet;
 
   const endpoint = useMemo(() => clusterApiUrl(network), [network]);
@@ -27,6 +27,8 @@ function Wallet() {
       <WalletProvider wallets={wallets} autoConnect>
         <WalletModalProvider>
           <WalletMultiButton />
+          <hr />
+          {children}
         </WalletModalProvider>
       </WalletProvider>
     </ConnectionProvider>
