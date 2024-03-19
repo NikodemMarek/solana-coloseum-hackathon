@@ -1,5 +1,8 @@
+import React from "react";
+import Wallet from "./Wallet.tsx";
+
 function App() {
-  return <div>Ideas Marketplace</div>;
+  return <Wallet />;
 }
 
 export default App;
