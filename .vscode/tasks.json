@@ -1,0 +1,21 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "anchor build",
+            "type": "shell",
+            "command": "docker compose run anchor-builder anchor build",
+            "options": {
+                "cwd": "./ideas-marketplace"
+            }
+        },
+        {
+            "label": "anchor deploy",
+            "type": "shell",
+            "command": "docker compose run anchor-builder anchor deploy",
+            "options": {
+                "cwd": "./ideas-marketplace"
+            }
+        }
+    ]
+}
