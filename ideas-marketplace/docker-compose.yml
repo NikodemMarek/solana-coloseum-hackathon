@@ -5,6 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    network_mode: host
     volumes:
       - ./:/workdir
       - ~/.config/solana/id.json:/root/.config/solana/id.json

@@ -16,6 +16,14 @@
             "options": {
                 "cwd": "./ideas-marketplace"
             }
+        },
+        {
+            "label": "anchor test",
+            "type": "shell",
+            "command": "docker compose run anchor-builder anchor test",
+            "options": {
+                "cwd": "./ideas-marketplace"
+            }
         }
     ]
 }
