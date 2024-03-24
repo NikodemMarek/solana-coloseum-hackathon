@@ -24,6 +24,14 @@
             "options": {
                 "cwd": "./ideas-marketplace"
             }
+        },
+        {
+            "label": "anchor grow program",
+            "type": "shell",
+            "command": "docker compose run anchor-builder rm /workdir/target/deploy/ideas_marketplace-keypair.json",
+            "options": {
+                "cwd": "./ideas-marketplace"
+            }
         }
     ]
 }

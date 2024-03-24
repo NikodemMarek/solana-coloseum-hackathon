@@ -1,9 +1,13 @@
 import * as anchor from "@coral-xyz/anchor";
-import { BN, Program } from "@coral-xyz/anchor";
-import { Keypair, SystemProgram } from "@solana/web3.js";
+import { Program } from "@coral-xyz/anchor";
+import { Keypair, PublicKey, SystemProgram } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 
 import { IdeasMarketplace } from "../target/types/ideas_marketplace";
+
+const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID: PublicKey = new PublicKey(
+  "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL",
+);
 
 describe("ideas-marketplace", () => {
   const provider = anchor.AnchorProvider.env();
@@ -14,55 +18,36 @@ describe("ideas-marketplace", () => {
 
   const payer = provider.wallet.payer;
 
-  // it("create idea", async () => {
-  //   console.log("it started");
-  //
-  //   const title = "My first idea";
-  //   const description = "This is a description of my first idea";
-  //
-  //   const creator = new Keypair();
-  //   const [ideaPDA, _] = await PublicKey.findProgramAddress(
-  //     [anchor.utils.bytes.utf8.encode("idea"), creator.publicKey.toBuffer()],
-  //     program.programId,
-  //   );
-  //
-  //   try {
-  //     const tx = await program.methods
-  //       .createIdea(title, description)
-  //       .accounts({
-  //         creator: creator.publicKey,
-  //         idea: ideaPDA,
-  //         payer: payer.publicKey,
-  //       })
-  //       .signers([payer])
-  //       .rpc();
-  //
-  //     console.log("created with signature: ", tx);
-  //
-  //     console.log(
-  //       "something changed: ",
-  //       await program.account.idea.fetch(ideaPDA),
-  //     );
-  //   } catch (e) {
-  //     console.log("error: ", e);
-  //   }
-  // });
+  it("create idea", async () => {
+    console.log("it started");
 
-  it("create mint", async () => {
+    const owner = Keypair.generate();
+    const [mintPDA, _m] = await PublicKey.findProgramAddress(
+      [anchor.utils.bytes.utf8.encode("mint"), owner.publicKey.toBuffer()],
+      program.programId,
+    );
+    const ideaPDA = anchor.utils.token.associatedAddress({
+      mint: mintPDA,
+      owner: owner.publicKey,
+    });
+
+    console.log("owner: ", owner.publicKey.toBase58());
     try {
-      const mint = Keypair.generate();
-
       const tx = await program.methods
-        .createMint()
+        .createIdea()
         .accounts({
           payer: payer.publicKey,
-          owner: payer.publicKey,
-          mint: mint.publicKey,
+          owner: owner.publicKey,
+          mint: mintPDA,
+          idea: ideaPDA,
           tokenProgram: TOKEN_PROGRAM_ID,
+          associateTokenProgram: SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID,
           systemProgram: SystemProgram.programId,
         })
-        .signers([payer, mint])
+        .signers([payer, owner])
         .rpc();
+
+      await program.provider.connection.confirmTransaction(tx);
 
       console.log("created with signature: ", tx);
     } catch (e) {
