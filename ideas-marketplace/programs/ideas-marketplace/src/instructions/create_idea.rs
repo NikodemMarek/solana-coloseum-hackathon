@@ -31,6 +31,9 @@ pub struct CreateIdea<'info> {
 }
 
 pub fn create_idea(ctx: Context<CreateIdea>) -> Result<()> {
+    // ctx.accounts.idea.title = "My Idea".to_string();
+    // ctx.accounts.idea.description = "My Idea".to_string();
+    
     associated_token::create(
         CpiContext::new(
             ctx.accounts.associate_token_program.to_account_info(), 
