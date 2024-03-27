@@ -5,15 +5,14 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-ideas_marketplace = "4H4kDTf3ZhURHeXrXCvZj4GNo6aXMxb9XNa3Reoab6Gp"
+ideas_marketplace = "7TDTHfz25iYupoyLWNwgGv2JWcgSuNmKZtFLxHWi8WJr"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "http://localhost:8899/"
-# cluster = "devnet"
-wallet = "~/.config/solana/id.json"
+wallet = "/root/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
