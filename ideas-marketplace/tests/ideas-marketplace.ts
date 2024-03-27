@@ -21,9 +21,9 @@ describe("ideas-marketplace", () => {
   it("create idea", async () => {
     console.log("it started");
 
-    const owner = Keypair.generate();
+    const creator = Keypair.generate();
     const [ideaPDA, _] = await PublicKey.findProgramAddress(
-      [anchor.utils.bytes.utf8.encode("idea"), owner.publicKey.toBuffer()],
+      [anchor.utils.bytes.utf8.encode("idea"), creator.publicKey.toBuffer()],
       program.programId,
     );
 
@@ -35,7 +35,7 @@ describe("ideas-marketplace", () => {
       )
       .accounts({
         payer: payer.publicKey,
-        owner: owner.publicKey,
+        creator: creator.publicKey,
         idea: ideaPDA,
         systemProgram: SystemProgram.programId,
       })
@@ -45,6 +45,6 @@ describe("ideas-marketplace", () => {
     await program.provider.connection.confirmTransaction(tx);
 
     console.log("created with signature: ", tx);
-    console.log("data: ", await program.account.idea.fetch(ideaPDA));
+    console.log("data: ", await program.account.idea.all());
   });
 });

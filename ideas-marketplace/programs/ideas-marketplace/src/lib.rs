@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 mod instructions;
 use instructions::*;
 
-declare_id!("7TDTHfz25iYupoyLWNwgGv2JWcgSuNmKZtFLxHWi8WJr");
+declare_id!("7oj17RE89fr5rWfHFAmBtQ3p5u874Y7Mgt212Hbp3a5s");
 
 #[program]
 pub mod ideas_marketplace {
