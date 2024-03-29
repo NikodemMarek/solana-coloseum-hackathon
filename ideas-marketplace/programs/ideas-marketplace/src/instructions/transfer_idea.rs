@@ -2,6 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_lang::solana_program::system_instruction;
 
 use crate::data::Idea;
+use crate::errors::IdeaMarketplaceError;
 
 #[derive(Accounts)]
 pub struct TransferIdea<'info> {
@@ -22,6 +23,8 @@ pub struct TransferIdea<'info> {
 }
 
 pub fn transfer_idea(ctx: Context<TransferIdea>) -> Result<()> {
+    require!(ctx.accounts.idea.is_for_sale, IdeaMarketplaceError::IdeaNotForSale);
+
     let payer = &ctx.accounts.payer;
     let recipient = &ctx.accounts.old_owner;
 

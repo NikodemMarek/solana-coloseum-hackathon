@@ -10,8 +10,10 @@ pub struct Idea {
     pub description: String,
 
     pub price: u64,
+
+    pub is_for_sale: bool,
 }
 
 impl Idea {
-    pub const SIZE: usize = 1 + 8 + 32 + 256 + 256 + 8;
+    pub const SIZE: usize = 1 + 32 + 256 + 256 + 8 + 1;
 }

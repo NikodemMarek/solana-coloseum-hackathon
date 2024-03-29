@@ -23,11 +23,12 @@ pub struct CreateIdea<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn create_idea(ctx: Context<CreateIdea>, title: String, description: String, price: u64) -> Result<()> {
+pub fn create_idea(ctx: Context<CreateIdea>, title: String, description: String, price: u64, is_for_sale: bool) -> Result<()> {
     ctx.accounts.idea.owner = ctx.accounts.creator.key();
     ctx.accounts.idea.title = title;
     ctx.accounts.idea.description = description;
     ctx.accounts.idea.price = price;
+    ctx.accounts.idea.is_for_sale = is_for_sale;
 
     Ok(())
 }
