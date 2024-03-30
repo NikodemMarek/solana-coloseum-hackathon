@@ -20,25 +20,43 @@ describe("ideas-marketplace", () => {
   const payer = provider.wallet.payer;
 
   const getBalance = program.provider.connection.getBalance.bind(
-    program.provider.connection,
+    program.provider.connection
   );
-  const confirmTransaction = program.provider.connection.confirmTransaction
-    .bind(
-      program.provider.connection,
+  const confirmTransaction =
+    program.provider.connection.confirmTransaction.bind(
+      program.provider.connection
     );
 
   it("create idea", async () => {
-    const data = {
+    const data1 = {
       title: "test title",
       description: "test description",
       price: 1 * LAMPORTS_PER_SOL,
       isForSale: true,
     };
+    const data2 = {
+      title: "test title 2",
+      description: "test description 2",
+      price: 1 * LAMPORTS_PER_SOL,
+      isForSale: true,
+    };
 
     const creator = Keypair.generate();
-    const [ideaPDA, _] = await PublicKey.findProgramAddress(
-      [anchor.utils.bytes.utf8.encode("idea"), creator.publicKey.toBuffer()],
-      program.programId,
+    const [idea1PDA, _1] = await PublicKey.findProgramAddress(
+      [
+        anchor.utils.bytes.utf8.encode("idea"),
+        anchor.utils.bytes.utf8.encode(data1.title),
+        creator.publicKey.toBuffer(),
+      ],
+      program.programId
+    );
+    const [idea2PDA, _2] = await PublicKey.findProgramAddress(
+      [
+        anchor.utils.bytes.utf8.encode("idea"),
+        anchor.utils.bytes.utf8.encode(data2.title),
+        creator.publicKey.toBuffer(),
+      ],
+      program.programId
     );
 
     const [payerBalanceBefore, creatorBalanceBefore] = await Promise.all([
@@ -46,37 +64,61 @@ describe("ideas-marketplace", () => {
       getBalance(creator.publicKey),
     ]);
 
-    const create_tx = await program.methods
+    const create1_tx = await program.methods
       .createIdea(
-        data.title,
-        data.description,
-        new BN(data.price),
-        data.isForSale,
+        data1.title,
+        data1.description,
+        new BN(data1.price),
+        data1.isForSale
       )
       .accounts({
         payer: payer.publicKey,
         creator: creator.publicKey,
-        idea: ideaPDA,
+        idea: idea1PDA,
         systemProgram: SystemProgram.programId,
       })
       .signers([payer])
       .rpc();
 
-    await confirmTransaction(create_tx);
+    await confirmTransaction(create1_tx);
 
-    console.log("signatures: ", [create_tx]);
+    const create2_tx = await program.methods
+      .createIdea(
+        data2.title,
+        data2.description,
+        new BN(data2.price),
+        data2.isForSale
+      )
+      .accounts({
+        payer: payer.publicKey,
+        creator: creator.publicKey,
+        idea: idea2PDA,
+        systemProgram: SystemProgram.programId,
+      })
+      .signers([payer])
+      .rpc();
+
+    await confirmTransaction(create2_tx);
+
+    console.log("signatures: ", [create1_tx, create2_tx]);
 
     assert.isAtMost(await getBalance(payer.publicKey), payerBalanceBefore);
     assert.equal(await getBalance(creator.publicKey), creatorBalanceBefore);
 
-    const res = await program.account.idea.fetch(ideaPDA);
-    assert.equal(res.title, data.title);
-    assert.equal(res.description, data.description);
-    assert.equal(res.price, data.price);
-    assert.equal(res.isForSale, data.isForSale);
+    const res1 = await program.account.idea.fetch(idea1PDA);
+    assert.equal(res1.title, data1.title);
+    assert.equal(res1.description, data1.description);
+    assert.equal(res1.price, data1.price);
+    assert.equal(res1.isForSale, data1.isForSale);
+
+    const res2 = await program.account.idea.fetch(idea2PDA);
+    assert.equal(res2.title, data2.title);
+    assert.equal(res2.description, data2.description);
+    assert.equal(res2.price, data2.price);
+    assert.equal(res2.isForSale, data2.isForSale);
   });
 
-  it("transfer idea", async () => {
+  it("buy idea", async () => {
     const data = {
       title: "test title",
       description: "test description",
@@ -86,17 +128,21 @@ describe("ideas-marketplace", () => {
 
     const creator = Keypair.generate();
     const [ideaPDA, _] = await PublicKey.findProgramAddress(
-      [anchor.utils.bytes.utf8.encode("idea"), creator.publicKey.toBuffer()],
-      program.programId,
+      [
+        anchor.utils.bytes.utf8.encode("idea"),
+        anchor.utils.bytes.utf8.encode(data.title),
+        creator.publicKey.toBuffer(),
+      ],
+      program.programId
     );
-    const newOwner = Keypair.generate();
+    const buyer = Keypair.generate();
 
     const create_tx = await program.methods
       .createIdea(
         data.title,
         data.description,
         new BN(data.price),
-        data.isForSale,
+        data.isForSale
       )
       .accounts({
         payer: payer.publicKey,
@@ -109,23 +155,23 @@ describe("ideas-marketplace", () => {
 
     await confirmTransaction(create_tx);
 
-    const [payerBalanceBefore, creatorBalanceBefore, newOwnerBalanceBefore] =
+    const [payerBalanceBefore, creatorBalanceBefore, buyerBalanceBefore] =
       await Promise.all([
         getBalance(payer.publicKey),
         getBalance(creator.publicKey),
-        getBalance(newOwner.publicKey),
+        getBalance(buyer.publicKey),
       ]);
 
     const transfer_tx = await program.methods
-      .transferIdea()
+      .buyIdea()
       .accounts({
         payer: payer.publicKey,
-        oldOwner: creator.publicKey,
-        newOwner: newOwner.publicKey,
+        seller: creator.publicKey,
+        buyer: buyer.publicKey,
         idea: ideaPDA,
         systemProgram: SystemProgram.programId,
       })
-      .signers([payer, creator])
+      .signers([payer])
       .rpc();
 
     await confirmTransaction(transfer_tx);
@@ -134,16 +180,16 @@ describe("ideas-marketplace", () => {
 
     assert.isAtMost(
       await getBalance(payer.publicKey),
-      payerBalanceBefore - data.price,
+      payerBalanceBefore - data.price
     );
     assert.equal(
       await getBalance(creator.publicKey),
-      creatorBalanceBefore + data.price,
+      creatorBalanceBefore + data.price
     );
-    assert.equal(await getBalance(newOwner.publicKey), newOwnerBalanceBefore);
+    assert.equal(await getBalance(buyer.publicKey), buyerBalanceBefore);
   });
 
-  it("try transfer idea not for sale", async () => {
+  it("try buy idea not for sale", async () => {
     const data = {
       title: "test title",
       description: "test description",
@@ -153,17 +199,21 @@ describe("ideas-marketplace", () => {
 
     const creator = Keypair.generate();
     const [ideaPDA, _] = await PublicKey.findProgramAddress(
-      [anchor.utils.bytes.utf8.encode("idea"), creator.publicKey.toBuffer()],
-      program.programId,
+      [
+        anchor.utils.bytes.utf8.encode("idea"),
+        anchor.utils.bytes.utf8.encode(data.title),
+        creator.publicKey.toBuffer(),
+      ],
+      program.programId
     );
-    const newOwner = Keypair.generate();
+    const buyer = Keypair.generate();
 
     const create_tx = await program.methods
       .createIdea(
         data.title,
         data.description,
         new BN(data.price),
-        data.isForSale,
+        data.isForSale
       )
       .accounts({
         payer: payer.publicKey,
@@ -176,24 +226,24 @@ describe("ideas-marketplace", () => {
 
     await confirmTransaction(create_tx);
 
-    const [payerBalanceBefore, creatorBalanceBefore, newOwnerBalanceBefore] =
+    const [payerBalanceBefore, creatorBalanceBefore, buyerBalanceBefore] =
       await Promise.all([
         getBalance(payer.publicKey),
         getBalance(creator.publicKey),
-        getBalance(newOwner.publicKey),
+        getBalance(buyer.publicKey),
       ]);
 
     try {
       const transfer_tx = await program.methods
-        .transferIdea()
+        .buyIdea()
         .accounts({
           payer: payer.publicKey,
-          oldOwner: creator.publicKey,
-          newOwner: newOwner.publicKey,
+          seller: creator.publicKey,
+          buyer: buyer.publicKey,
           idea: ideaPDA,
           systemProgram: SystemProgram.programId,
         })
-        .signers([payer, creator])
+        .signers([payer])
         .rpc();
 
       await confirmTransaction(transfer_tx);
@@ -205,7 +255,7 @@ describe("ideas-marketplace", () => {
 
     assert.equal(await getBalance(payer.publicKey), payerBalanceBefore);
     assert.equal(await getBalance(creator.publicKey), creatorBalanceBefore);
-    assert.equal(await getBalance(newOwner.publicKey), newOwnerBalanceBefore);
+    assert.equal(await getBalance(buyer.publicKey), buyerBalanceBefore);
   });
 
   it("change idea state", async () => {
@@ -218,8 +268,12 @@ describe("ideas-marketplace", () => {
 
     const owner = Keypair.generate();
     const [ideaPDA, _] = await PublicKey.findProgramAddress(
-      [anchor.utils.bytes.utf8.encode("idea"), owner.publicKey.toBuffer()],
-      program.programId,
+      [
+        anchor.utils.bytes.utf8.encode("idea"),
+        anchor.utils.bytes.utf8.encode(data.title),
+        owner.publicKey.toBuffer(),
+      ],
+      program.programId
     );
 
     const create_tx = await program.methods
@@ -227,7 +281,7 @@ describe("ideas-marketplace", () => {
         data.title,
         data.description,
         new BN(data.price),
-        data.isForSale,
+        data.isForSale
       )
       .accounts({
         payer: payer.publicKey,
@@ -242,7 +296,7 @@ describe("ideas-marketplace", () => {
 
     assert.equal(
       (await program.account.idea.fetch(ideaPDA)).isForSale,
-      data.isForSale,
+      data.isForSale
     );
 
     const set_idea_is_for_sale_tx = await program.methods
@@ -261,7 +315,7 @@ describe("ideas-marketplace", () => {
 
     assert.equal(
       (await program.account.idea.fetch(ideaPDA)).isForSale,
-      !data.isForSale,
+      !data.isForSale
     );
   });
 });

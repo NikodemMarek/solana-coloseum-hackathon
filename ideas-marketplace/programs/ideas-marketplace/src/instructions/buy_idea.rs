@@ -5,16 +5,18 @@ use crate::data::Idea;
 use crate::errors::IdeaMarketplaceError;
 
 #[derive(Accounts)]
-pub struct TransferIdea<'info> {
+pub struct BuyIdea<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
+    /// CHECK: The seller already gave permission to sell the idea.
     #[account(mut)]
-    pub old_owner: Signer<'info>,
+    pub seller: UncheckedAccount<'info>,
 
-    /// CHECK: The new owner does not need to give permission to recieve the idea.
+    /// CHECK: The buyer does not need to give permission to recieve the idea, because he does not
+    /// pay for it.
     #[account(mut)]
-    pub new_owner: AccountInfo<'info>,
+    pub buyer: UncheckedAccount<'info>,
 
     #[account(mut)]
     pub idea: Account<'info, Idea>,
@@ -22,11 +24,12 @@ pub struct TransferIdea<'info> {
     pub system_program: Program<'info, System>,
 }
 
-pub fn transfer_idea(ctx: Context<TransferIdea>) -> Result<()> {
+pub fn buy_idea(ctx: Context<BuyIdea>) -> Result<()> {
     require!(ctx.accounts.idea.is_for_sale, IdeaMarketplaceError::IdeaNotForSale);
+    require!(ctx.accounts.idea.owner == ctx.accounts.seller.key(), IdeaMarketplaceError::NotIdeaOwner);
 
     let payer = &ctx.accounts.payer;
-    let recipient = &ctx.accounts.old_owner;
+    let recipient = &ctx.accounts.seller;
 
     let cost = ctx.accounts.idea.price;
 
@@ -41,7 +44,8 @@ pub fn transfer_idea(ctx: Context<TransferIdea>) -> Result<()> {
         &[],
     )?;
 
-    ctx.accounts.idea.owner = ctx.accounts.new_owner.key();
+    ctx.accounts.idea.owner = ctx.accounts.buyer.key();
+    ctx.accounts.idea.is_for_sale = false;
 
     Ok(())
 }

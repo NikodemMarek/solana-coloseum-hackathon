@@ -6,7 +6,7 @@ mod errors;
 
 use instructions::*;
 
-declare_id!("JwpxVwXNbSpdn1hxbnpRnNTsnXPbV5zWVXHDKtQnTGm");
+declare_id!("5KoS5ttQJhFNhy9DsMu5Wdz6qZPjBJmVHRKcLb8tggEJ");
 
 #[program]
 pub mod ideas_marketplace {
@@ -16,8 +16,8 @@ pub mod ideas_marketplace {
         create_idea::create_idea(ctx, title, description, price, is_for_sale)
     }
 
-    pub fn transfer_idea(ctx: Context<TransferIdea>) -> Result<()> {
-        transfer_idea::transfer_idea(ctx)
+    pub fn buy_idea(ctx: Context<BuyIdea>) -> Result<()> {
+        buy_idea::buy_idea(ctx)
     }
 
     pub fn set_idea_is_for_sale(ctx: Context<SetIdeaIsForSale>, is_for_sale: bool) -> Result<()> {
