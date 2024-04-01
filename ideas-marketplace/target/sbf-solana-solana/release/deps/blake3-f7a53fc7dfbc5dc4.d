@@ -1,0 +1,13 @@
+/workdir/target/sbf-solana-solana/release/deps/blake3-f7a53fc7dfbc5dc4.rmeta: /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/lib.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/guts.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/platform.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/portable.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/traits.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/io.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/join.rs
+
+/workdir/target/sbf-solana-solana/release/deps/libblake3-f7a53fc7dfbc5dc4.rlib: /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/lib.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/guts.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/platform.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/portable.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/traits.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/io.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/join.rs
+
+/workdir/target/sbf-solana-solana/release/deps/blake3-f7a53fc7dfbc5dc4.d: /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/lib.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/guts.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/platform.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/portable.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/traits.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/io.rs /root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/join.rs
+
+/root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/lib.rs:
+/root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/guts.rs:
+/root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/platform.rs:
+/root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/portable.rs:
+/root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/traits.rs:
+/root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/io.rs:
+/root/.cargo/registry/src/index.crates.io-6f17d22bba15001f/blake3-1.5.0/src/join.rs:
