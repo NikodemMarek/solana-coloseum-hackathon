@@ -1,7 +1,5 @@
-import React from "react";
 import Masonry from "@mui/lab/Masonry";
-
-import Idea from "../data/Idea";
+import { Idea } from "../data/data.ts";
 import IdeaCard from "./IdeaCard";
 
 const IdeasGrid = ({ ideas }: { ideas: Idea[] }) => {

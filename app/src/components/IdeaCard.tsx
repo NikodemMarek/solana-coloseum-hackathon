@@ -1,7 +1,5 @@
-import React from "react";
 import { Card, CardContent, Typography } from "@mui/material";
-
-import Idea from "../data/Idea";
+import { Idea } from "../data/data.ts";
 
 function IdeaCard({ idea }: { idea: Idea }) {
   return (
