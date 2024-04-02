@@ -12,6 +12,7 @@ export default function NewIdeaPage() {
     const wallet = useWallet();
     const navigate = useNavigate();
 
+    const [error, setError] = useState({ title: false, description: false, price: false })
     const [message, setMessage] = useState({ type: "none", msg: "" })
     const [price, setPrice] = useState(1)
     const [loading, setLoading] = useState(false)
@@ -26,11 +27,13 @@ export default function NewIdeaPage() {
 
     const handleTitleChange: ChangeEventHandler = e => {
         const input = (e.target as HTMLInputElement).value;
+        setError({ ...error, title: false })
         setIdea({ ...idea, title: input });
     };
 
     const handleDescriptionChange: ChangeEventHandler = e => {
         const input = (e.target as HTMLInputElement).value;
+        setError({ ...error, description: false })
         setIdea({ ...idea, description: input });
     };
 
@@ -43,11 +46,31 @@ export default function NewIdeaPage() {
 
         const input = parseFloat(el.value);
         setPrice(input)
+        setError({ ...error, price: false })
         setIdea({ ...idea, price: Math.round(input * LAMPORTS_PER_SOL) });
     };
 
     const create = () => {
         if (wallet.publicKey == null) {
+            setMessage({ type: "error", msg: "You need to be logged in to add ideas." })
+            return
+        }
+
+        if (idea.title == "") {
+            setMessage({ type: "error", msg: "Ideas title cannot be empty." })
+            setError({ ...error, title: true })
+            return
+        }
+
+        if (idea.description == "") {
+            setMessage({ type: "error", msg: "Ideas description cannot be empty." })
+            setError({ ...error, description: true })
+            return
+        }
+
+        if (idea.price < 0) {
+            setMessage({ type: "error", msg: "Ideas price cannot be less than 0 SOL." })
+            setError({ ...error, price: true })
             return
         }
 
@@ -63,11 +86,11 @@ export default function NewIdeaPage() {
             wallet.publicKey,
         )
             .then(() => {
-                setMessage({ type: "ok", msg: "Idea added sucessfully" })
+                setMessage({ type: "ok", msg: "Idea added sucessfully." })
             })
             .catch(err => {
                 console.error(err)
-                setMessage({ type: "error", msg: "There was an error during idea creation. Try again in a moment" })
+                setMessage({ type: "error", msg: "There was an error during idea creation. Try again in a moment." })
             })
             .finally(() => {
                 setLoading(false)
@@ -87,7 +110,7 @@ export default function NewIdeaPage() {
             className="flex w-full h-full justify-center items-center"
         >
             <div
-                className='flex flex-col gap-2 p-8 border border-black rounded w-96'
+                className='flex flex-col gap-2 p-8 sm:border border-black rounded w-96'
             >
                 <Typography variant="h3" textAlign={'center'} marginY={1}>Idea creator</Typography>
                 <TextField
@@ -95,6 +118,7 @@ export default function NewIdeaPage() {
                     variant="outlined"
                     onChange={handleTitleChange}
                     value={idea.title}
+                    error={error.title}
                 />
                 <TextField
                     label="Description of the idea"
@@ -103,6 +127,7 @@ export default function NewIdeaPage() {
                     value={idea.description}
                     minRows={3}
                     multiline
+                    error={error.description}
                 />
                 <TextField
                     label="Price"
@@ -112,7 +137,7 @@ export default function NewIdeaPage() {
                     InputProps={{
                         endAdornment: <InputAdornment position="end">SOL</InputAdornment>,
                     }}
-                    error={price < 0}
+                    error={price < 0 || error.price}
                 />
                 <LoadingButton
                     loading={loading}
@@ -123,7 +148,10 @@ export default function NewIdeaPage() {
                 >
                     Add idea
                 </LoadingButton>
-                {message.type != "none" && <Box>
+                {message.type != "none" && <Box
+                    textAlign={'center'}
+                    color={message.type == "error" ? 'red' : 'black'}
+                >
                     {message.msg}
                 </Box>}
             </div>
