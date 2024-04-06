@@ -31,18 +31,79 @@ function getProgram(
 async function getIdeas(
   connection: Connection,
   wallet: Wallet,
+  filter: (idea: Idea) => boolean = () => true,
 ): Promise<Idea[]> {
   const program = getProgram(connection, wallet);
   return (await program.account.idea.all()).reduce(
-    (acc: Idea[], idea: { account: Idea; pubkey: PublicKey }) => {
-      if (idea.account.isForSale) {
-        acc.push(idea.account);
+    (acc: Idea[], it: { account: Idea; publicKey: PublicKey }) => {
+      const idea = { ...it.account, publicKey: it.publicKey };
+      if (filter(idea)) {
+        acc.push(idea);
       }
-
       return acc;
     },
     [],
   );
+}
+
+async function getIdeasForSale(
+  connection: Connection,
+  wallet: Wallet,
+): Promise<Idea[]> {
+  return await getIdeas(connection, wallet, (idea) => idea.isForSale);
+}
+
+async function getNotOwnedIdeasForSale(
+  connection: Connection,
+  wallet: Wallet,
+): Promise<Idea[]> {
+  if (!wallet.publicKey) {
+    throw new Error("Wallet not connected");
+  }
+
+  return await getIdeas(
+    connection,
+    wallet,
+    (idea) => idea.isForSale && !wallet.publicKey.equals(idea.owner),
+  );
+}
+
+async function getOwnedIdeas(
+  connection: Connection,
+  wallet: Wallet,
+): Promise<Idea[]> {
+  if (!wallet.publicKey) {
+    throw new Error("Wallet not connected");
+  }
+
+  return await getIdeas(
+    connection,
+    wallet,
+    (idea) => wallet.publicKey.equals(idea.owner),
+  );
+}
+
+async function buyIdea(
+  connection: Connection,
+  wallet: Wallet,
+  idea: Idea,
+  buyer: PublicKey,
+) {
+  const program = getProgram(connection, wallet);
+  console.log("buyIdea: ", [buyer, idea]);
+  const buy_tx = await program.methods
+    .buyIdea()
+    .accounts({
+      payer: buyer,
+      seller: idea.owner,
+      buyer: buyer,
+      idea: idea.publicKey,
+      systemProgram,
+    })
+    .transaction();
+
+  const res = await wallet.sendTransaction(buy_tx, connection);
+  console.log("Idea bought: ", [res]);
 }
 
 async function createIdea(
@@ -77,4 +138,11 @@ async function createIdea(
   console.log("Idea created: ", [res]);
 }
 
-export { createIdea, getIdeas };
+export {
+  buyIdea,
+  createIdea,
+  getIdeas,
+  getIdeasForSale,
+  getNotOwnedIdeasForSale,
+  getOwnedIdeas,
+};

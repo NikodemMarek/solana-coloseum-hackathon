@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Keypair, LAMPORTS_PER_SOL, PublicKey } from "@solana/web3.js";
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { Box, Button } from "@mui/material";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 
@@ -7,7 +7,11 @@ import { Idea } from "./data/data.ts";
 import IdeaEditor from "./components/IdeaEditor.tsx";
 import IdeasGrid from "./components/IdeasGrid.tsx";
 
-import { createIdea, getIdeas } from "./data/api.ts";
+import {
+  createIdea,
+  getNotOwnedIdeasForSale,
+  getOwnedIdeas,
+} from "./data/api.ts";
 
 const Home = () => {
   const { connection } = useConnection();
@@ -21,13 +25,27 @@ const Home = () => {
     owner: wallet.publicKey,
   } as Idea);
 
+  const [ownedIdeas, setOwnedIdeas] = useState([]);
+  const [ideas, setIdeas] = useState([]);
   useEffect(() => {
     (async () => {
-      const ideas = await getIdeas(connection, wallet);
-      setIdeas(ideas);
+      if (!wallet.publicKey) return;
+
+      try {
+        const ideas = await getNotOwnedIdeasForSale(connection, wallet);
+        setIdeas(ideas);
+      } catch (error) {
+        console.error("Error getting ideas", error);
+      }
+
+      try {
+        const ownedIdeas = await getOwnedIdeas(connection, wallet);
+        setOwnedIdeas(ownedIdeas);
+      } catch (error) {
+        console.error("Error getting ideas", error);
+      }
     })();
-  }, [connection]);
-  const [ideas, setIdeas] = useState([]);
+  }, [wallet.publicKey]);
 
   return (
     <Box display="flex" flexDirection="row" margin={2} gap={2}>
@@ -63,6 +81,10 @@ const Home = () => {
 
       <Box flex={1}>
         <IdeasGrid ideas={ideas} />
+
+        <hr />
+
+        <IdeasGrid ideas={ownedIdeas} />
       </Box>
     </Box>
   );
