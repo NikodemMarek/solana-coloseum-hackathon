@@ -7,12 +7,17 @@ import { Idea } from "./data/data.ts";
 import IdeaEditor from "./components/IdeaEditor.tsx";
 import IdeasGrid from "./components/IdeasGrid.tsx";
 
-import { createIdea, getIdeas } from "./data/api.ts";
+import {
+  createIdea,
+  getNotOwnedIdeasForSale,
+  getOwnedIdeas,
+} from "./data/api.ts";
 
 const Home = () => {
     const { connection } = useConnection();
     const wallet = useWallet();
     const [ideas, setIdeas] = useState([] as Idea[]);
+    const [ownedIdeas, setOwnedIdeas] = useState([] as Idea[]);
 
     const emptyIdea = () => {
         return {
@@ -20,19 +25,33 @@ const Home = () => {
             description: "",
             price: 1 * LAMPORTS_PER_SOL,
             isForSale: true,
-            owner: wallet.publicKey?.toString(),
+            owner: wallet.publicKey,
         } as Idea
     }
 
-    const [idea, setIdea] = useState(emptyIdea());
+    const [idea, setIdea] = useState(emptyIdea())
 
-    useEffect(() => {
-        (async () => {
-            const ideas = await getIdeas(connection, wallet);
-            setIdeas(ideas);
-        })().catch(err => console.error(err));
-    }, [connection, wallet]);
+  useEffect(() => {
+    (async () => {
+      if (!wallet.publicKey) return;
 
+      try {
+        const ideas = await getNotOwnedIdeasForSale(connection, wallet);
+        setIdeas(ideas);
+      } catch (error) {
+        console.error("Error getting ideas", error);
+      }
+
+      try {
+        const ownedIdeas = await getOwnedIdeas(connection, wallet);
+        setOwnedIdeas(ownedIdeas);
+      } catch (error) {
+        console.error("Error getting ideas", error);
+      }
+    })().catch(err => {
+        console.error(err)
+    });
+  }, [wallet, connection]);
     return (
         <Box display="flex" flexDirection="row" margin={2} gap={2}>
             <Box minWidth="25%" display="flex" flexDirection="column" gap={2}>
@@ -66,9 +85,13 @@ const Home = () => {
 
             <Box flex={1}>
                 <IdeasGrid ideas={ideas} />
-            </Box>
-        </Box>
-    );
+
+        <hr />
+
+        <IdeasGrid ideas={ownedIdeas} />
+      </Box>
+    </Box>
+  );
 };
 
 export default Home;
