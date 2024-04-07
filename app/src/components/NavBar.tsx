@@ -9,7 +9,7 @@ import { useWallet } from '@solana/wallet-adapter-react';
 import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Create, Home, Search } from '@mui/icons-material';
+import { Create, Home, Inventory2, Search } from '@mui/icons-material';
 
 export default function NavBar() {
     const wallet = useWallet()
@@ -66,6 +66,14 @@ export default function NavBar() {
                             >
                                 New idea
                             </Button>
+                            <Button
+                                variant='text'
+                                disabled={!wallet.connected}
+                                color='inherit'
+                                onClick={() => nav("/newIdea")}
+                            >
+                                Your ideas
+                            </Button>
                         </>
                     }
                     <Box className="ml-auto">
@@ -91,25 +99,38 @@ export default function NavBar() {
                     <span className="sr-only">Close menu</span>
                 </button>
                 <div className="py-4 overflow-y-auto">
-                    <ul className="space-y-2 font-medium px-2">
-                        <li>
+                    <h2
+                        className='text-center my-8 text-3xl font-bold'
+                    >Ideas Marketplace</h2>
+                    <ul className="space-y-4 font-medium px-4">
+                        <li className='text-xl'>
                             <Link to='/' onClick={() => setShowSidebar(false)} className='flex items-center'>
-                            <Home/>
+                            <Home sx={{marginRight: '0.5rem'}} />
                             Home
                             </Link>
                         </li>
-                        <li>
+                        <li className='text-xl'>
                             <Link to='/search' onClick={() => setShowSidebar(false)} className='flex items-center'>
-                            <Search/>
+                            <Search sx={{marginRight: '0.5rem'}} />
                             Search &amp; Buy
                             </Link>
                         </li>
-                        <li>
-                            <Link to='/newIdea' onClick={() => setShowSidebar(false)} className='flex items-center'>
-                            <Create/>
-                            New idea
-                            </Link>
-                        </li>
+                        {wallet.connected && 
+                        <>
+                            <li className='text-xl'>
+                                <Link to='/newIdea' onClick={() => setShowSidebar(false)} className='flex items-center'>
+                                <Create sx={{marginRight: '0.5rem'}} />
+                                New idea
+                                </Link>
+                            </li>
+                            <li className='text-xl'>
+                                <Link to='/yourIdeas' onClick={() => setShowSidebar(false)} className='flex items-center'>
+                                <Inventory2 sx={{marginRight: '0.5rem'}} />
+                                Your ideas
+                                </Link>
+                            </li>
+                        </>
+                        }
                     </ul>
                 </div>
             </div>
