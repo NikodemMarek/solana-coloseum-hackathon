@@ -86,7 +86,9 @@ export default function NewIdeaPage() {
             wallet.publicKey,
         )
             .then(() => {
-                setMessage({ type: "ok", msg: "Idea added sucessfully." })
+                setMessage({ type: "ok", msg: "Idea added sucessfully. Redirection to search page in 5 seconds" })
+                setTimeout(() => 
+                    navigate("/search"), 5000)
             })
             .catch(err => {
                 console.error(err)
@@ -126,7 +128,8 @@ export default function NewIdeaPage() {
                     variant="outlined"
                     onChange={handleDescriptionChange}
                     value={idea.description}
-                    minRows={5}
+                    minRows={3}
+                    maxRows={16}
                     multiline
                     error={error.description}
                 />
