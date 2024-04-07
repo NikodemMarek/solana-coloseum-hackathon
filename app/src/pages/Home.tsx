@@ -13,7 +13,44 @@ export default function Home() {
             </div>
             <div className="landing-bg absolute top-0 left-0 w-full h-full flex justify-center overflow-hidden">
                 <div className="w-full lg:w-[1024px]">
-                    <div className="flex items-center w-full justify-between mt-16">
+                    <div className="sm:hidden mt-20 flex flex-col">
+                        <div className="ml-6 text-4xl leading-none rounded-3xl">
+                            <div className="mb-1 w-80" id="question">
+                                Looking for</div>
+                            <div className="flex items-center">
+                                <div id="idea3" className="ml-5 my-auto h-[2.5rem] overflow-hidden text-end">
+                                    <div className="h-[2.5rem] text-violet-800">an awesome</div>
+                                    <div className="h-[2.5rem] text-purple-700">a project</div>
+                                    <div className="h-[2.5rem] text-fuchsia-800">a business</div>
+                                    <div className="h-[2.5rem] text-violet-800">an awesome</div>
+                                </div>
+                                <div className="h-[2.5rem] my-auto">&nbsp;idea?</div>
+                            </div>
+                        </div>
+                        <Button
+                            sx={{ fontSize: "1rem", marginLeft: "auto", marginRight: "2rem", marginTop: "1.5rem" }} size="large" variant="contained"
+                            onClick={() => navigation("/search")}
+                        >Explore</Button>
+                    </div>
+                    <div className="sm:hidden mt-16 flex flex-col">
+                        <div className="ml-6 text-4xl leading-none rounded-3xl">
+                            <div className="mb-1 mr-10">Want to share your</div>
+                            <div className="flex items-center">
+                                <div id="idea4" className="ml-5 my-auto h-[2.5rem] overflow-hidden text-end">
+                                    <div className="h-[2.5rem] text-purple-700">great new</div>
+                                    <div className="h-[2.5rem] text-fuchsia-800">life changing</div>
+                                    <div className="h-[2.5rem] text-violet-800">project</div>
+                                    <div className="h-[2.5rem] text-purple-700">great new</div>
+                                </div>
+                                <div className="h-[2.5rem] my-auto text-left">&nbsp;idea?</div>
+                            </div>
+                        </div>
+                        <Button
+                            sx={{ fontSize: "1rem", marginLeft: "auto", marginRight: "2rem", marginTop: "1.5rem" }} size="large" variant="contained"
+                            onClick={() => navigation("/newIdea")}
+                        >Share</Button>
+                    </div>
+                    <div className="hidden sm:flex items-center w-full justify-between mt-16">
                         <div className="ml-2 text-[4rem] leading-none border-2 p-5 rounded-3xl bg-[#6C63FF]/20 border-[#6C63FF]/10">
                             <div className="mb-1 w-80" id="question">
                                 Looking for</div>
@@ -32,7 +69,7 @@ export default function Home() {
                             onClick={() => navigation("/search")}
                         >Explore</Button>
                     </div>
-                    <div className="flex items-center w-full justify-between mt-24">
+                    <div className="hidden sm:flex items-center w-full justify-between mt-24">
                         <Button
                             sx={{ fontSize: "2rem", borderRadius: "1rem" }} size="large" variant="contained"
                             onClick={() => navigation("/newIdea")}

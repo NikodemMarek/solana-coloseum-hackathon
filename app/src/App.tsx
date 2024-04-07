@@ -1,10 +1,10 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import Wallet from "./Wallet.tsx";
-import Home from "./Home.tsx";
 import NavBar from './components/NavBar.tsx';
 import NewIdeaPage from './pages/createNew.tsx';
 import SearchForPage from './pages/searchFor.tsx';
 import YourIdeas from './pages/yourIdeas.tsx';
+import Home from './pages/Home.tsx';
 
 function App() {
     return (
