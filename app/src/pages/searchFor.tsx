@@ -1,9 +1,9 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import IdeasGrid from "../components/IdeasGrid";
 import { ChangeEventHandler, useEffect, useState } from "react";
-import { getIdeas } from "../data/api";
+import { getIdeasForSale } from "../data/api";
 import { Idea } from "../data/data";
-import { InputAdornment, TextField } from "@mui/material";
+import { InputAdornment, TextField, Typography } from "@mui/material";
 import { Search } from "@mui/icons-material";
 
 export default function SearchForPage() {
@@ -12,6 +12,7 @@ export default function SearchForPage() {
     const [ideas, setIdeas] = useState([] as Idea[]);
     const [filteredIdeas, setFilteredIdeas] = useState([] as Idea[])
     const [search, setSearch] = useState("")
+    const [error, setError] = useState(false)
 
     const handleSearch: ChangeEventHandler = (e) => {
         const input = (e.target as HTMLInputElement).value;
@@ -20,10 +21,14 @@ export default function SearchForPage() {
 
     useEffect(() => {
         (async () => {
-            const ideas = await getIdeas(connection, wallet);
+            setError(false)
+            const ideas = await getIdeasForSale(connection, wallet);
             setIdeas(ideas);
             setFilteredIdeas(ideas);
-        })().catch(e => console.error(e));
+        })().catch(e => {
+            console.error(e)
+            setError(true)
+        });
     }, [connection, wallet]);
 
     useEffect(() => {
@@ -47,6 +52,13 @@ export default function SearchForPage() {
                     endAdornment: <InputAdornment position="end"><Search/></InputAdornment>,
                 }}
             />
+            {wallet.publicKey == null && 
+            <Typography color={"red"} textAlign={"center"} marginBottom={'3rem'}>You need to connect your wallet to buy ideas</Typography>
+            }
+            {error && 
+            <Typography color={"red"} textAlign={"center"} marginBottom={'3rem'}>There was an error during idea fetching. Try again in a moment.</Typography>
+            }
+            {/* spinner */}
             <IdeasGrid ideas={filteredIdeas} />
         </div>
     )

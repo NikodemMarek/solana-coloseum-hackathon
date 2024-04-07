@@ -4,7 +4,8 @@ import IdeaCard from "./IdeaCard";
 
 const IdeasGrid = ({ ideas }: { ideas: Idea[] }) => {
   return (
-    <Masonry columns={4} spacing={2}>
+
+    <Masonry columns={window.innerWidth >= 640 ? 4 : 1} spacing={2}>
       {ideas.map((idea, key) => (
         <IdeaCard key={key} idea={idea} />
       ))}
