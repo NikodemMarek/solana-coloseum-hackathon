@@ -59,7 +59,7 @@ export default function YourIdeas() {
             <div className="pt-1 mb-3 w-full flex flex-col justify-center sticky top-0 bg-white/90">
                 <TextField
                     onChange={handleSearch}
-                    label="Search for an idea"
+                    label="Search through your ideas"
                     sx={{
                         marginX: 'auto',
                         width: '20rem',

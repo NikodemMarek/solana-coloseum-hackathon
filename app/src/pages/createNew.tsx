@@ -101,12 +101,6 @@ export default function NewIdeaPage() {
         return
     }
 
-    useEffect(() => {
-        if (wallet.publicKey == null || !wallet.connected) {
-            navigate("/")
-        }
-    }, [wallet, navigate])
-
     return (
         <div
             className="flex w-full h-full justify-center items-center"
@@ -166,9 +160,13 @@ export default function NewIdeaPage() {
                     onClick={create}
                     onChange={handleDescriptionChange}
                     value={idea.description}
+                    disabled={wallet.publicKey == null}
                 >
                     Add idea
                 </LoadingButton>
+                {wallet.publicKey == null && (
+                    <Box color={'red'} textAlign={'center'}>You need to connect your wallet to add new idea</Box>
+                )}
                 {message.type != "none" && <Box
                     textAlign={'center'}
                     color={message.type == "error" ? 'red' : 'black'}

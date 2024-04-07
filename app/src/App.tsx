@@ -12,7 +12,7 @@ function App() {
             <Router>
                 <div className='flex flex-col w-screen h-screen'>
                     <NavBar />
-                    <main className='grow w-full h-full'>
+                    <main className='grow w-full h-full relative'>
                         <Routes>
                             <Route path="/" Component={Home} />
                             <Route path="/newIdea" Component={NewIdeaPage} />
