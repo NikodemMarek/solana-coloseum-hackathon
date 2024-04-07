@@ -4,6 +4,7 @@ import Home from "./Home.tsx";
 import NavBar from './components/NavBar.tsx';
 import NewIdeaPage from './pages/createNew.tsx';
 import SearchForPage from './pages/searchFor.tsx';
+import YourIdeas from './pages/yourIdeas.tsx';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                             <Route path="/" Component={Home} />
                             <Route path="/newIdea" Component={NewIdeaPage} />
                             <Route path="/search" Component={SearchForPage} />
+                            <Route path="/yourIdeas" Component={YourIdeas} />
                         </Routes>
                     </main>
                 </div>
