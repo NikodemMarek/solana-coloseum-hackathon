@@ -15,7 +15,7 @@ import { createIdeasContent, getIdeasContent } from "./firebase-api.ts";
 
 const systemProgram = SystemProgram.programId;
 
-const programId = new PublicKey("9JSRe7vjdVgsuMk67b4fiBsxkxRD8Uy5eQQrTB64sYFQ");
+const programId = new PublicKey("BFGLMCzCmCyMPc2ntisKs7toR1N9u7kexi9zDyYbE5xo");
 async function findPDA(seeds: string[]): Promise<PublicKey> {
   return await PublicKey.findProgramAddress(seeds, programId);
 }
@@ -38,11 +38,15 @@ async function getIdeas(
 
   const acc: Idea[] = [];
   for (const it of await program.account.idea.all()) {
-    const content = await getIdeasContent(it.account.uri);
-    const idea = { ...it.account, content, publicKey: it.publicKey };
+    try {
+      const content = await getIdeasContent(it.account.uri);
+      const idea = { ...it.account, content, publicKey: it.publicKey };
 
-    if (filter(idea)) {
-      acc.push(idea);
+      if (filter(idea)) {
+        acc.push(idea);
+      }
+    } catch (e) {
+      console.error("Failed to get idea content", e);
     }
   }
 
