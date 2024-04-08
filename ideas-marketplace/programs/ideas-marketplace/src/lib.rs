@@ -6,14 +6,14 @@ mod errors;
 
 use instructions::*;
 
-declare_id!("5KoS5ttQJhFNhy9DsMu5Wdz6qZPjBJmVHRKcLb8tggEJ");
+declare_id!("5qeG7otiV6fA7QTe3ezdaUCZRKNTehJ7zHWFxTCwNX8y");
 
 #[program]
 pub mod ideas_marketplace {
     use super::*;
 
-    pub fn create_idea(ctx: Context<CreateIdea>, title: String, description: String, price: u64, is_for_sale: bool) -> Result<()> {
-        create_idea::create_idea(ctx, title, description, price, is_for_sale)
+    pub fn create_idea(ctx: Context<CreateIdea>, title: String, uri: String, price: u64, is_for_sale: bool) -> Result<()> {
+        create_idea::create_idea(ctx, title, uri, price, is_for_sale)
     }
 
     pub fn buy_idea(ctx: Context<BuyIdea>) -> Result<()> {

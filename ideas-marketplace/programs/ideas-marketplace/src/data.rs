@@ -7,7 +7,7 @@ pub struct Idea {
     pub owner: Pubkey,
 
     pub title: String,
-    pub description: String,
+    pub uri: String,
 
     pub price: u64,
 
@@ -15,5 +15,5 @@ pub struct Idea {
 }
 
 impl Idea {
-    pub const SIZE: usize = 1 + 32 + 256 + 256 + 8 + 1;
+    pub const SIZE: usize = 1 + 32 + 254 + 254 + 8 + 1;
 }

@@ -20,23 +20,23 @@ describe("ideas-marketplace", () => {
   const payer = provider.wallet.payer;
 
   const getBalance = program.provider.connection.getBalance.bind(
-    program.provider.connection
+    program.provider.connection,
   );
-  const confirmTransaction =
-    program.provider.connection.confirmTransaction.bind(
-      program.provider.connection
+  const confirmTransaction = program.provider.connection.confirmTransaction
+    .bind(
+      program.provider.connection,
     );
 
   it("create idea", async () => {
     const data1 = {
       title: "test title",
-      description: "test description",
+      uri: "test uri",
       price: 1 * LAMPORTS_PER_SOL,
       isForSale: true,
     };
     const data2 = {
       title: "test title 2",
-      description: "test description 2",
+      uri: "test uri 2",
       price: 1 * LAMPORTS_PER_SOL,
       isForSale: true,
     };
@@ -48,7 +48,7 @@ describe("ideas-marketplace", () => {
         anchor.utils.bytes.utf8.encode(data1.title),
         creator.publicKey.toBuffer(),
       ],
-      program.programId
+      program.programId,
     );
     const [idea2PDA, _2] = await PublicKey.findProgramAddress(
       [
@@ -56,7 +56,7 @@ describe("ideas-marketplace", () => {
         anchor.utils.bytes.utf8.encode(data2.title),
         creator.publicKey.toBuffer(),
       ],
-      program.programId
+      program.programId,
     );
 
     const [payerBalanceBefore, creatorBalanceBefore] = await Promise.all([
@@ -65,12 +65,7 @@ describe("ideas-marketplace", () => {
     ]);
 
     const create1_tx = await program.methods
-      .createIdea(
-        data1.title,
-        data1.description,
-        new BN(data1.price),
-        data1.isForSale
-      )
+      .createIdea(data1.title, data1.uri, new BN(data1.price), data1.isForSale)
       .accounts({
         payer: payer.publicKey,
         creator: creator.publicKey,
@@ -83,12 +78,7 @@ describe("ideas-marketplace", () => {
     await confirmTransaction(create1_tx);
 
     const create2_tx = await program.methods
-      .createIdea(
-        data2.title,
-        data2.description,
-        new BN(data2.price),
-        data2.isForSale
-      )
+      .createIdea(data2.title, data2.uri, new BN(data2.price), data2.isForSale)
       .accounts({
         payer: payer.publicKey,
         creator: creator.publicKey,
@@ -107,13 +97,13 @@ describe("ideas-marketplace", () => {
 
     const res1 = await program.account.idea.fetch(idea1PDA);
     assert.equal(res1.title, data1.title);
-    assert.equal(res1.description, data1.description);
+    assert.equal(res1.uri, data1.uri);
     assert.equal(res1.price, data1.price);
     assert.equal(res1.isForSale, data1.isForSale);
 
     const res2 = await program.account.idea.fetch(idea2PDA);
     assert.equal(res2.title, data2.title);
-    assert.equal(res2.description, data2.description);
+    assert.equal(res2.uri, data2.uri);
     assert.equal(res2.price, data2.price);
     assert.equal(res2.isForSale, data2.isForSale);
   });
@@ -121,7 +111,7 @@ describe("ideas-marketplace", () => {
   it("buy idea", async () => {
     const data = {
       title: "test title",
-      description: "test description",
+      uri: "test uri",
       price: 1 * LAMPORTS_PER_SOL,
       isForSale: true,
     };
@@ -133,17 +123,12 @@ describe("ideas-marketplace", () => {
         anchor.utils.bytes.utf8.encode(data.title),
         creator.publicKey.toBuffer(),
       ],
-      program.programId
+      program.programId,
     );
     const buyer = Keypair.generate();
 
     const create_tx = await program.methods
-      .createIdea(
-        data.title,
-        data.description,
-        new BN(data.price),
-        data.isForSale
-      )
+      .createIdea(data.title, data.uri, new BN(data.price), data.isForSale)
       .accounts({
         payer: payer.publicKey,
         creator: creator.publicKey,
@@ -180,11 +165,11 @@ describe("ideas-marketplace", () => {
 
     assert.isAtMost(
       await getBalance(payer.publicKey),
-      payerBalanceBefore - data.price
+      payerBalanceBefore - data.price,
     );
     assert.equal(
       await getBalance(creator.publicKey),
-      creatorBalanceBefore + data.price
+      creatorBalanceBefore + data.price,
     );
     assert.equal(await getBalance(buyer.publicKey), buyerBalanceBefore);
   });
@@ -192,7 +177,7 @@ describe("ideas-marketplace", () => {
   it("try buy idea not for sale", async () => {
     const data = {
       title: "test title",
-      description: "test description",
+      uri: "test uri",
       price: 1 * LAMPORTS_PER_SOL,
       isForSale: false,
     };
@@ -204,17 +189,12 @@ describe("ideas-marketplace", () => {
         anchor.utils.bytes.utf8.encode(data.title),
         creator.publicKey.toBuffer(),
       ],
-      program.programId
+      program.programId,
     );
     const buyer = Keypair.generate();
 
     const create_tx = await program.methods
-      .createIdea(
-        data.title,
-        data.description,
-        new BN(data.price),
-        data.isForSale
-      )
+      .createIdea(data.title, data.uri, new BN(data.price), data.isForSale)
       .accounts({
         payer: payer.publicKey,
         creator: creator.publicKey,
@@ -261,7 +241,7 @@ describe("ideas-marketplace", () => {
   it("change idea state", async () => {
     const data = {
       title: "test title",
-      description: "test description",
+      uri: "test uri",
       price: 1 * LAMPORTS_PER_SOL,
       isForSale: true,
     };
@@ -273,16 +253,11 @@ describe("ideas-marketplace", () => {
         anchor.utils.bytes.utf8.encode(data.title),
         owner.publicKey.toBuffer(),
       ],
-      program.programId
+      program.programId,
     );
 
     const create_tx = await program.methods
-      .createIdea(
-        data.title,
-        data.description,
-        new BN(data.price),
-        data.isForSale
-      )
+      .createIdea(data.title, data.uri, new BN(data.price), data.isForSale)
       .accounts({
         payer: payer.publicKey,
         creator: owner.publicKey,
@@ -296,7 +271,7 @@ describe("ideas-marketplace", () => {
 
     assert.equal(
       (await program.account.idea.fetch(ideaPDA)).isForSale,
-      data.isForSale
+      data.isForSale,
     );
 
     const set_idea_is_for_sale_tx = await program.methods
@@ -315,7 +290,7 @@ describe("ideas-marketplace", () => {
 
     assert.equal(
       (await program.account.idea.fetch(ideaPDA)).isForSale,
-      !data.isForSale
+      !data.isForSale,
     );
   });
 });
