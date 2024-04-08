@@ -32,7 +32,7 @@
           "type": "string"
         },
         {
-          "name": "description",
+          "name": "uri",
           "type": "string"
         },
         {
@@ -125,7 +125,7 @@
             "type": "string"
           },
           {
-            "name": "description",
+            "name": "uri",
             "type": "string"
           },
           {
@@ -150,9 +150,24 @@
       "code": 6001,
       "name": "NotIdeaOwner",
       "msg": "seller is not the current owner of the idea"
+    },
+    {
+      "code": 6002,
+      "name": "TitleTooLong",
+      "msg": "idea title is too long"
+    },
+    {
+      "code": 6003,
+      "name": "UriTooLong",
+      "msg": "idea uri is too long"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidPrice",
+      "msg": "idea price must be greater than zero"
     }
   ],
   "metadata": {
-    "address": "5KoS5ttQJhFNhy9DsMu5Wdz6qZPjBJmVHRKcLb8tggEJ"
+    "address": "9JSRe7vjdVgsuMk67b4fiBsxkxRD8Uy5eQQrTB64sYFQ"
   }
 }

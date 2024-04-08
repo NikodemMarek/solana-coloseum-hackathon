@@ -32,7 +32,7 @@ export type IdeasMarketplace = {
           "type": "string"
         },
         {
-          "name": "description",
+          "name": "uri",
           "type": "string"
         },
         {
@@ -125,7 +125,7 @@ export type IdeasMarketplace = {
             "type": "string"
           },
           {
-            "name": "description",
+            "name": "uri",
             "type": "string"
           },
           {
@@ -150,6 +150,21 @@ export type IdeasMarketplace = {
       "code": 6001,
       "name": "NotIdeaOwner",
       "msg": "seller is not the current owner of the idea"
+    },
+    {
+      "code": 6002,
+      "name": "TitleTooLong",
+      "msg": "idea title is too long"
+    },
+    {
+      "code": 6003,
+      "name": "UriTooLong",
+      "msg": "idea uri is too long"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidPrice",
+      "msg": "idea price must be greater than zero"
     }
   ]
 };
@@ -188,7 +203,7 @@ export const IDL: IdeasMarketplace = {
           "type": "string"
         },
         {
-          "name": "description",
+          "name": "uri",
           "type": "string"
         },
         {
@@ -281,7 +296,7 @@ export const IDL: IdeasMarketplace = {
             "type": "string"
           },
           {
-            "name": "description",
+            "name": "uri",
             "type": "string"
           },
           {
@@ -306,6 +321,21 @@ export const IDL: IdeasMarketplace = {
       "code": 6001,
       "name": "NotIdeaOwner",
       "msg": "seller is not the current owner of the idea"
+    },
+    {
+      "code": 6002,
+      "name": "TitleTooLong",
+      "msg": "idea title is too long"
+    },
+    {
+      "code": 6003,
+      "name": "UriTooLong",
+      "msg": "idea uri is too long"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidPrice",
+      "msg": "idea price must be greater than zero"
     }
   ]
 };

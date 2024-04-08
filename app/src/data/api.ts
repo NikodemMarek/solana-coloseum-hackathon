@@ -10,11 +10,12 @@ import {
 import { Wallet } from "@solana/wallet-adapter-base";
 
 import { IDL as IdeasMarketplace } from "../../../ideas-marketplace/target/types/ideas_marketplace.ts";
-import { Idea } from "./data.ts";
+import { Idea, IdeaContent } from "./data.ts";
+import { createIdeasContent, getIdeasContent } from "./firebase-api.ts";
 
 const systemProgram = SystemProgram.programId;
 
-const programId = new PublicKey("5KoS5ttQJhFNhy9DsMu5Wdz6qZPjBJmVHRKcLb8tggEJ");
+const programId = new PublicKey("9JSRe7vjdVgsuMk67b4fiBsxkxRD8Uy5eQQrTB64sYFQ");
 async function findPDA(seeds: string[]): Promise<PublicKey> {
   return await PublicKey.findProgramAddress(seeds, programId);
 }
@@ -31,25 +32,88 @@ function getProgram(
 async function getIdeas(
   connection: Connection,
   wallet: Wallet,
+  filter: (idea: Idea) => boolean = () => true,
 ): Promise<Idea[]> {
   const program = getProgram(connection, wallet);
-  return (await program.account.idea.all()).reduce(
-    (acc: Idea[], idea: { account: Idea; pubkey: PublicKey }) => {
-      if (idea.account.isForSale) {
-        acc.push(idea.account);
-      }
 
-      return acc;
-    },
-    [],
+  const acc: Idea[] = [];
+  for (const it of await program.account.idea.all()) {
+    const content = await getIdeasContent(it.account.uri);
+    const idea = { ...it.account, content, publicKey: it.publicKey };
+
+    if (filter(idea)) {
+      acc.push(idea);
+    }
+  }
+
+  return acc;
+}
+
+async function getIdeasForSale(
+  connection: Connection,
+  wallet: Wallet,
+): Promise<Idea[]> {
+  return await getIdeas(connection, wallet, (idea) => idea.isForSale);
+}
+
+async function getNotOwnedIdeasForSale(
+  connection: Connection,
+  wallet: Wallet,
+): Promise<Idea[]> {
+  if (!wallet.publicKey) {
+    throw new Error("Wallet not connected");
+  }
+
+  return await getIdeas(
+    connection,
+    wallet,
+    (idea) => idea.isForSale && !wallet.publicKey.equals(idea.owner),
   );
+}
+
+async function getOwnedIdeas(
+  connection: Connection,
+  wallet: Wallet,
+): Promise<Idea[]> {
+  if (!wallet.publicKey) {
+    throw new Error("Wallet not connected");
+  }
+
+  return await getIdeas(
+    connection,
+    wallet,
+    (idea) => wallet.publicKey.equals(idea.owner),
+  );
+}
+
+async function buyIdea(
+  connection: Connection,
+  wallet: Wallet,
+  idea: Idea,
+  buyer: PublicKey,
+) {
+  const program = getProgram(connection, wallet);
+  console.log("buyIdea: ", [buyer, idea]);
+  const buy_tx = await program.methods
+    .buyIdea()
+    .accounts({
+      payer: buyer,
+      seller: idea.owner,
+      buyer: buyer,
+      idea: idea.publicKey,
+      systemProgram,
+    })
+    .transaction();
+
+  const res = await wallet.sendTransaction(buy_tx, connection);
+  console.log("Idea bought: ", [res]);
 }
 
 async function createIdea(
   connection: Connection,
   wallet: Wallet,
   title: string,
-  description: string,
+  content: IdeaContent,
   price: number,
   isForSale: boolean = true,
   creator: PublicKey,
@@ -58,12 +122,23 @@ async function createIdea(
 
   const [ideaPDA, _] = await findPDA([
     anchor.utils.bytes.utf8.encode("idea"),
-    anchor.utils.bytes.utf8.encode(title),
+    // ...( title.match(/.{1,32}/g) || [] ).map((c: string) => anchor.utils.bytes.utf8.encode(c)),
+    // title.reduce((acc: string[], c: char) => [...acc, acc.at(-1)?.length == 32?  ]).map((c: string) => anchor.utils.bytes.utf8.encode(c)),
+    // anchor.utils.bytes.utf8.encode(title),
+    anchor.utils.bytes.utf8.encode(title.slice(0, 32)),
     creator.toBuffer(),
   ]);
 
+  let uri: string;
+  try {
+    uri = await createIdeasContent(content);
+  } catch (e) {
+    console.error("Failed to create idea content", e);
+    throw new Error("Failed to create idea content");
+  }
+
   const create_tx = await program.methods
-    .createIdea(title, description, new BN(price), isForSale)
+    .createIdea(title, uri, new BN(price), isForSale)
     .accounts({
       payer: creator,
       creator: creator,
@@ -77,4 +152,11 @@ async function createIdea(
   console.log("Idea created: ", [res]);
 }
 
-export { createIdea, getIdeas };
+export {
+  buyIdea,
+  createIdea,
+  getIdeas,
+  getIdeasForSale,
+  getNotOwnedIdeasForSale,
+  getOwnedIdeas,
+};

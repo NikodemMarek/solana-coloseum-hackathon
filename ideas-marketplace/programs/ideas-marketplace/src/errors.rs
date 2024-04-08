@@ -6,5 +6,14 @@ pub enum IdeaMarketplaceError {
     IdeaNotForSale,
 
     #[msg("seller is not the current owner of the idea")]
-    NotIdeaOwner
+    NotIdeaOwner,
+
+    #[msg("idea title is too long")]
+    TitleTooLong,
+
+    #[msg("idea uri is too long")]
+    UriTooLong,
+
+    #[msg("idea price must be greater than zero")]
+    InvalidPrice,
 }

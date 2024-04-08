@@ -5,13 +5,14 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-ideas_marketplace = "5KoS5ttQJhFNhy9DsMu5Wdz6qZPjBJmVHRKcLb8tggEJ"
+ideas_marketplace = "9JSRe7vjdVgsuMk67b4fiBsxkxRD8Uy5eQQrTB64sYFQ"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "http://localhost:8899/"
+# cluster = "http://localhost:8899/"
+cluster = "https://api.devnet.solana.com"
 wallet = "/root/.config/solana/id.json"
 
 [scripts]

@@ -10,6 +10,45 @@
       @tailwind components;
       @tailwind utilities;
     </style>
+
+    <style>
+        #idea2 div:first-child,
+        #idea1 div:first-child {
+          animation: show 5s linear infinite;
+        }
+
+        #idea4 div:first-child,
+        #idea3 div:first-child {
+          animation: show-sm 5s linear infinite;
+        }
+        
+        @keyframes show {
+          0% {margin-top:-18rem;}
+          2% {margin-top:-15rem;}
+          31% {margin-top:-15rem;}
+          35% {margin-top:-10rem;}
+          64% {margin-top:-10rem;}
+          68% {margin-top:-5rem;}
+          98% {margin-top:-5rem;}
+          100% {margin-top:-3rem;}
+        }
+
+        @keyframes show-sm {
+          0% {margin-top:-140px;}
+          2% {margin-top:-120px;}
+          31% {margin-top:-120px;}
+          35% {margin-top:-80px;}
+          64% {margin-top:-80px;}
+          68% {margin-top:-40px;}
+          98% {margin-top:-40px;}
+          100% {margin-top:-20px;}
+        }
+
+        .landing-bg {
+            background-color: #ffffff;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23dfddff' fill-opacity='1' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+        }
+    </style>
   </head>
   <body>
     <div id="root"></div>
