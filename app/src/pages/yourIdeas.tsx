@@ -42,7 +42,7 @@ export default function YourIdeas() {
 
     useEffect(() => {
         setIdeas(ideas.filter(idea =>
-            idea.title.includes(search) || idea.description.includes(search)
+            idea.title.includes(search) || idea.content.description.includes(search)
         ))
     }, [search])
 

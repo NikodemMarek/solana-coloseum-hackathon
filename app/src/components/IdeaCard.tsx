@@ -13,13 +13,13 @@ function IdeaCard({ idea, forSale }: { idea: Idea, forSale: boolean}) {
     const [shortDescription, setShortDescription] = useState("")
 
     useEffect(() => {
-        const desc = idea.description.split(" ")
+        const desc = idea.content.description.split(" ") || []
         if (desc.length >= 50) {
             setShortDescription(desc.splice(50).join(" ") + "...")
         } else {
-            setShortDescription(idea.description)
+            setShortDescription(idea.content.description || "")
         }
-    }, [idea.description])
+    }, [idea.content.description])
 
     return (
         <Card sx={{
@@ -136,7 +136,7 @@ function IdeaCard({ idea, forSale }: { idea: Idea, forSale: boolean}) {
                                             color: "rgba(0,0,0,0.54)",
                                         }} />
                                     )}
-                                    {idea.description}
+                                    {idea.content.description}
                                 </Typography>
                             </ListItemText>
                         </ListItem>

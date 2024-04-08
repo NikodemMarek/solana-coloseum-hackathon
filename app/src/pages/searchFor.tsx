@@ -40,7 +40,7 @@ export default function SearchForPage() {
 
     useEffect(() => {
         let filteredIdeas1 = ideas.filter(idea =>
-            idea.title.includes(search) || idea.description.includes(search) || idea.owner.toString().includes(search)
+            idea.title.includes(search) || idea.content.description.includes(search) || idea.owner.toString().includes(search)
         )
 
         if (!showUserIdeas) {

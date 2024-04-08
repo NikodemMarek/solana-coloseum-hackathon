@@ -17,7 +17,7 @@ pub struct CreateIdea<'info> {
         init,
         payer = payer,
         space = 1 + 8 + Idea::SIZE,
-        seeds = [b"idea", title.as_bytes(), creator.key().as_ref()],
+        seeds = [b"idea", title.chars().take(32).collect::<String>().as_bytes(), creator.key().as_ref()],
         bump,
     )]
     pub idea: Account<'info, Idea>,
@@ -26,7 +26,6 @@ pub struct CreateIdea<'info> {
 }
 
 pub fn create_idea(ctx: Context<CreateIdea>, title: String, uri: String, price: u64, is_for_sale: bool) -> Result<()> {
-    require!(price > 0, IdeaMarketplaceError::InvalidPrice);
     require!(title.len() <= 254, IdeaMarketplaceError::TitleTooLong);
     require!(uri.len() <= 254, IdeaMarketplaceError::UriTooLong);
 

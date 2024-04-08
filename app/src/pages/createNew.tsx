@@ -12,14 +12,14 @@ export default function NewIdeaPage() {
     const wallet = useWallet();
     const navigate = useNavigate();
 
-    const [error, setError] = useState({ title: false, description: false, price: false })
+    const [error, setError] = useState({ title: false, content: { description: false }, price: false })
     const [message, setMessage] = useState({ type: "none", msg: "" })
     const [price, setPrice] = useState(1)
     const [loading, setLoading] = useState(false)
 
     const [idea, setIdea] = useState({
         title: "",
-        description: "",
+        content: { description: "" },
         price: price * LAMPORTS_PER_SOL,
         isForSale: true,
         owner: wallet.publicKey,
@@ -34,7 +34,7 @@ export default function NewIdeaPage() {
     const handleDescriptionChange: ChangeEventHandler = e => {
         const input = (e.target as HTMLInputElement).value;
         setError({ ...error, description: false })
-        setIdea({ ...idea, description: input });
+        setIdea({ ...idea, content: { ...idea.content, description: input } });
     };
 
     const handlePriceChange: ChangeEventHandler = e => {
@@ -51,6 +51,7 @@ export default function NewIdeaPage() {
     };
 
     const create = () => {
+        console.log(idea.title.length)
         if (wallet.publicKey == null) {
             setMessage({ type: "error", msg: "You need to be logged in to add ideas." })
             return
@@ -62,7 +63,13 @@ export default function NewIdeaPage() {
             return
         }
 
-        if (idea.description == "") {
+        if (idea.title.length > 254) {
+            setMessage({ type: "error", msg: "Ideas title cannot be longer than 100 characters." })
+            setError({ ...error, title: true })
+            return
+        }
+
+        if (idea.content.description == "") {
             setMessage({ type: "error", msg: "Ideas description cannot be empty." })
             setError({ ...error, description: true })
             return
@@ -80,7 +87,7 @@ export default function NewIdeaPage() {
             connection,
             wallet,
             idea.title,
-            idea.description,
+            idea.content,
             idea.price,
             idea.isForSale,
             wallet.publicKey,
@@ -121,7 +128,7 @@ export default function NewIdeaPage() {
                     label="Description of the idea"
                     variant="outlined"
                     onChange={handleDescriptionChange}
-                    value={idea.description}
+                    value={idea.content.description}
                     minRows={3}
                     maxRows={16}
                     multiline
@@ -159,7 +166,7 @@ export default function NewIdeaPage() {
                     variant="outlined"
                     onClick={create}
                     onChange={handleDescriptionChange}
-                    value={idea.description}
+                    value={idea.content.description}
                     disabled={wallet.publicKey == null}
                 >
                     Add idea

@@ -10,7 +10,7 @@ function IdeaEditor({ idea, onChange }: { idea: Idea; onChange: (idea: Idea) => 
 
     const handleDescriptionChange: ChangeEventHandler = (e) => {
         const input = (e.target as HTMLInputElement).value;
-        onChange({ ...idea, description: input });
+        onChange({ ...idea, content: { ...idea.content, description: input } });
     };
 
     return (
@@ -27,7 +27,7 @@ function IdeaEditor({ idea, onChange }: { idea: Idea; onChange: (idea: Idea) => 
                 label="Describe your idea"
                 variant="outlined"
                 onChange={handleDescriptionChange}
-                value={idea.description}
+                value={idea.content.description}
                 minRows={3}
                 multiline
             />

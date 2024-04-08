@@ -6,7 +6,7 @@ mod errors;
 
 use instructions::*;
 
-declare_id!("5qeG7otiV6fA7QTe3ezdaUCZRKNTehJ7zHWFxTCwNX8y");
+declare_id!("9JSRe7vjdVgsuMk67b4fiBsxkxRD8Uy5eQQrTB64sYFQ");
 
 #[program]
 pub mod ideas_marketplace {

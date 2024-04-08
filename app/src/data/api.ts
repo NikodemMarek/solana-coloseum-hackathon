@@ -10,11 +10,12 @@ import {
 import { Wallet } from "@solana/wallet-adapter-base";
 
 import { IDL as IdeasMarketplace } from "../../../ideas-marketplace/target/types/ideas_marketplace.ts";
-import { Idea } from "./data.ts";
+import { Idea, IdeaContent } from "./data.ts";
+import { createIdeasContent, getIdeasContent } from "./firebase-api.ts";
 
 const systemProgram = SystemProgram.programId;
 
-const programId = new PublicKey("5KoS5ttQJhFNhy9DsMu5Wdz6qZPjBJmVHRKcLb8tggEJ");
+const programId = new PublicKey("9JSRe7vjdVgsuMk67b4fiBsxkxRD8Uy5eQQrTB64sYFQ");
 async function findPDA(seeds: string[]): Promise<PublicKey> {
   return await PublicKey.findProgramAddress(seeds, programId);
 }
@@ -34,16 +35,18 @@ async function getIdeas(
   filter: (idea: Idea) => boolean = () => true,
 ): Promise<Idea[]> {
   const program = getProgram(connection, wallet);
-  return (await program.account.idea.all()).reduce(
-    (acc: Idea[], it: { account: Idea; publicKey: PublicKey }) => {
-      const idea = { ...it.account, publicKey: it.publicKey };
-      if (filter(idea)) {
-        acc.push(idea);
-      }
-      return acc;
-    },
-    [],
-  );
+
+  const acc: Idea[] = [];
+  for (const it of await program.account.idea.all()) {
+    const content = await getIdeasContent(it.account.uri);
+    const idea = { ...it.account, content, publicKey: it.publicKey };
+
+    if (filter(idea)) {
+      acc.push(idea);
+    }
+  }
+
+  return acc;
 }
 
 async function getIdeasForSale(
@@ -110,7 +113,7 @@ async function createIdea(
   connection: Connection,
   wallet: Wallet,
   title: string,
-  description: string,
+  content: IdeaContent,
   price: number,
   isForSale: boolean = true,
   creator: PublicKey,
@@ -119,12 +122,23 @@ async function createIdea(
 
   const [ideaPDA, _] = await findPDA([
     anchor.utils.bytes.utf8.encode("idea"),
-    anchor.utils.bytes.utf8.encode(title),
+    // ...( title.match(/.{1,32}/g) || [] ).map((c: string) => anchor.utils.bytes.utf8.encode(c)),
+    // title.reduce((acc: string[], c: char) => [...acc, acc.at(-1)?.length == 32?  ]).map((c: string) => anchor.utils.bytes.utf8.encode(c)),
+    // anchor.utils.bytes.utf8.encode(title),
+    anchor.utils.bytes.utf8.encode(title.slice(0, 32)),
     creator.toBuffer(),
   ]);
 
+  let uri: string;
+  try {
+    uri = await createIdeasContent(content);
+  } catch (e) {
+    console.error("Failed to create idea content", e);
+    throw new Error("Failed to create idea content");
+  }
+
   const create_tx = await program.methods
-    .createIdea(title, description, new BN(price), isForSale)
+    .createIdea(title, uri, new BN(price), isForSale)
     .accounts({
       payer: creator,
       creator: creator,
